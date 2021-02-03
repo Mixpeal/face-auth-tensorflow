@@ -1,8 +1,16 @@
+import 'dart:io';
+
 import 'package:Face_recognition/pages/create.dart';
 import 'package:Face_recognition/pages/login.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-class Welcome extends StatelessWidget {
+class Welcome extends StatefulWidget {
+  @override
+  _WelcomeState createState() => _WelcomeState();
+}
+
+class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

@@ -26,6 +26,7 @@ class _PreloaderState extends State<Preloader> {
     var user = localStorage.getString('user');
     try {
       if (user != null) {
+        print(user);
         Navigator.push(
           context,
           new MaterialPageRoute(

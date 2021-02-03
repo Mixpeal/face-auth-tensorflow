@@ -75,30 +75,6 @@ class SharedPref {
     return false;
   }
 
-  removeById(String key, id) async {
-    final prefs = await SharedPreferences.getInstance();
-    var curItem = prefs.getString(key) != null ? prefs.getString(key) : '';
-    List allCart = curItem.isNotEmpty ? json.decode(curItem) : [];
-    List getItems = allCart.where((item) => item['id'] == id).toList();
-    if (getItems != null && getItems.length > 0) {
-      int getIndex = allCart.indexWhere((item) => item['id'] == id);
-      allCart.remove(allCart[getIndex]);
-    }
-    prefs.setString(key, json.encode(allCart));
-  }
-
-  updateById(String key, id, qty) async {
-    final prefs = await SharedPreferences.getInstance();
-    var curItem = prefs.getString(key) != null ? prefs.getString(key) : '';
-    List allCart = curItem.isNotEmpty ? json.decode(curItem) : [];
-    List getItems = allCart.where((item) => item['id'] == id).toList();
-    if (getItems != null && getItems.length > 0) {
-      int getIndex = allCart.indexWhere((item) => item['id'] == id);
-      allCart[getIndex]['qty'] = qty;
-    }
-    prefs.setString(key, json.encode(allCart));
-  }
-
   remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove(key);

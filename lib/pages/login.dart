@@ -10,7 +10,6 @@ import 'package:camera/camera.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imglib;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:quiver/collection.dart';
 import 'package:flutter/services.dart';
@@ -276,7 +275,7 @@ class _LoginState extends State<Login> {
         }
       }
     }
-    print(minDist.toString() + " " + predRes);
+    //print(minDist.toString() + " " + predRes);
 
     return predRes;
   }

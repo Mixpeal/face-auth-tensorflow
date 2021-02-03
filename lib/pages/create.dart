@@ -98,7 +98,8 @@ class _CreateState extends State<Create> {
                           builder: (context) => RegisterFace(data: {
                                 'name': name.text,
                                 'email': email.text,
-                                'phone': phone.text
+                                'phone': phone.text,
+                                'photo': '',
                               })),
                     );
                   } else {

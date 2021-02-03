@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:quiver/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' show join;
 
 import '../detector_painters.dart';
 import '../utils.dart';
@@ -37,7 +38,7 @@ class _RegisterFaceState extends State<RegisterFace> {
   double threshold = 1.0;
   Directory tempDir;
   List e1;
-  bool _faceFound = false;
+  bool _faceFound = false, done = false;
   final TextEditingController _name = new TextEditingController();
   SharedPref sharedPref = SharedPref();
   var user;
@@ -255,23 +256,26 @@ class _RegisterFaceState extends State<RegisterFace> {
         predRes = label;
         if (user == null) {
           try {
-            var getUser = await sharedPref.readByName('users', label);
-            print(getUser);
-            if (getUser != null && getUser.length > 0) {
-              setState(() {
-                user = getUser[0];
-              });
-              sharedPref.save('user', user);
-              var timer = new Timer(const Duration(seconds: 2), () async {
+            if (done == false) {
+              var getUser = await sharedPref.readByName('users', label);
+              if (getUser != null && getUser.length > 0) {
                 setState(() {
-                  _camera = null;
+                  user = getUser[0];
                 });
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => Profile(data: user, message: 'We recognise you, you already have an account, welcome back')),
-                );
-              });
+                var timer = new Timer(const Duration(seconds: 2), () async {
+                  setState(() {
+                    _camera = null;
+                  });
+                  Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => Profile(
+                            data: user,
+                            message:
+                                'We recognise you, you already have an account, welcome back')),
+                  );
+                });
+              }
             }
           } catch (e) {
             print(e);
@@ -408,19 +412,34 @@ class _RegisterFaceState extends State<RegisterFace> {
                 SharedPreferences localStorage =
                     await SharedPreferences.getInstance();
                 //localStorage.remove('users');
-                bool check = await sharedPref.append("users", widget.data);
+                Future<void> _initializeControllerFuture = _camera.initialize();
+                await _initializeControllerFuture;
+                final path = join(
+                  // Store the picture in the temp directory.
+                  // Find the temp directory using the `path_provider` plugin.
+                  (await getTemporaryDirectory()).path,
+                  '${DateTime.now()}.png',
+                );
+
+                // Attempt to take a picture and log where it's been saved.
+                await _camera.takePicture(path);
+                Map allData = widget.data;
+                allData['photo'] = path;
+                bool check = await sharedPref.append("users", allData);
                 if (check) {
                   setState(() {
-                    _camera = null;
+                    done = true;
                   });
                   //_resetFile();
                   _handle(widget.data['name']);
-                  localStorage.setString('user', json.encode(widget.data));
-
+                  setState(() {
+                    _camera = null;
+                  });
+                  localStorage.setString('user', json.encode(allData));
                   Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (context) => Profile(data: widget.data)),
+                        builder: (context) => Profile(data: allData)),
                   );
                   //_addLabel();
                 } else {

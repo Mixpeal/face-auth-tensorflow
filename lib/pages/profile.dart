@@ -4,6 +4,7 @@ import 'package:Face_recognition/pages/welcome.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math' as math;
 
 class Profile extends StatefulWidget {
   final Map data;
@@ -14,8 +15,16 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  String photo;
   File jsonFile;
   Directory tempDir;
+
+  @override
+  void initState() {
+    super.initState();
+    //print(widget.data);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -44,25 +53,41 @@ class _ProfileState extends State<Profile> {
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  widget.data['photo'] != null &&
+                          widget.data['photo'].length > 0
+                      ? Transform(
+                          transform: Matrix4.rotationY(-2 * math.pi / 2),
+                          alignment: Alignment.center,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      width: 5,
+                                      color: Colors.black.withOpacity(0.05))),
+                              child: Image.file(
+                                File(widget.data['photo']),
+                                height: 150,
+                              )),
+                        )
+                      : SizedBox(),
                   Container(
-                      margin: EdgeInsets.only(bottom: 5, left: 10, right: 10),
-                      child: Text(
-                        'Hello, ${widget.data['name']}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 28),
-                      )),
-                  Container(
-                      margin: EdgeInsets.only(bottom: 50, left: 10, right: 10),
-                      child: Text(
-                        '${widget.data['email']}/${widget.data['phone']}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(width: 0.1, color: Colors.black)),
+                      child: Column(
+                        children: [
+                          EachList(
+                              title: "Name", value: "${widget.data['name']}"),
+                          EachList(
+                              title: "Email", value: "${widget.data['email']}"),
+                          EachList(
+                              title: "Phone Number",
+                              value: "${widget.data['phone']}"),
+                        ],
                       )),
                 ],
               )),
@@ -134,5 +159,36 @@ class _ProfileState extends State<Profile> {
         ),
       ),
     );
+  }
+}
+
+class EachList extends StatelessWidget {
+  final String title, value;
+
+  const EachList({Key key, this.title, this.value}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+        // decoration: BoxDecoration(
+        //     border:
+        //         Border(bottom: BorderSide(width: 0.1, color: Colors.black))),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                '$title: ',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15),
+              ),
+            ),
+            Text(
+              '$value',
+              style: TextStyle(fontSize: 15),
+            )
+          ],
+        ));
   }
 }

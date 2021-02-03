@@ -13,7 +13,8 @@ import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:quiver/collection.dart';
 import 'package:flutter/services.dart';
 
-void main() {
+void main() async {
+
   runApp(MaterialApp(
     themeMode: ThemeMode.light,
     theme: ThemeData(brightness: Brightness.light),
